@@ -10,7 +10,7 @@ public class TesteAdicionar {
 		Usuario usuario = new Usuario();
 		usuario.setNome("Mateus");		
 		usuario.setSobrenome("Melo");
-		usuario.setEmail("mateus.melo@gmail.com");
+		usuario.setEmail("mateus.melo90@gmail.com");
 		usuario.setSenha("123123");
 		
 		UsuarioDAO dao = new UsuarioDAO();

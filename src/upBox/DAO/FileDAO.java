@@ -23,8 +23,8 @@ public class FileDAO {
 			
 			PreparedStatement stmt = con.prepareStatement(sql);
 			
-			stmt.setString(1, "nome");
-			stmt.setString(2, "caminho");			
+			stmt.setString(1, file.getNome());
+			stmt.setString(2, file.getCaminho());			
 			
 			stmt.execute();
 			stmt.close();
@@ -32,8 +32,6 @@ public class FileDAO {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		
-		
+		}		
 	}
 }

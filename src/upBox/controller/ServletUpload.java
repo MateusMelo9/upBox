@@ -1,8 +1,10 @@
 package upBox.controller;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -12,6 +14,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -27,7 +30,9 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import sun.net.util.IPAddressUtil;
+import upBox.DAO.FileDAO;
 import upBox.connection.ConnectionFactory;
+import upBox.model.FileEntity;
 
 /**
  * Servlet implementation class ServletUpload
@@ -51,6 +56,7 @@ public class ServletUpload extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		throw new ServletException("GET method used with " + getClass().getName() + ": POST method required.");
+		
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -90,15 +96,22 @@ public class ServletUpload extends HttpServlet {
 			out.println("<title>Servlet upload</title>");
 			out.println("</head>");
 			out.println("<body>");
+			
+			String fieldName=null;
+			String fileName=null;
+			String contentType;
+			boolean isInMemory;
+			long sizeBytes;
+			
 			while (i.hasNext()) {
 				FileItem fi = (FileItem) i.next();
 				if (!fi.isFormField()) {
 					// pegar os parametros do arquivo
-					String fieldName = fi.getFieldName();
-					String fileName = fi.getName();
-					String contentType = fi.getContentType();
-					boolean isInMemory = fi.isInMemory();
-					long sizBytes = fi.getSize();
+					fieldName = fi.getFieldName();
+					fileName = fi.getName();
+					contentType = fi.getContentType();
+					isInMemory = fi.isInMemory();
+					sizeBytes = fi.getSize();
 					// escreve o arquivo
 					if (fileName.lastIndexOf("\\") >= 0) {
 						file = new File(filePath + fileName.substring(fileName.lastIndexOf("\\")));
@@ -107,10 +120,20 @@ public class ServletUpload extends HttpServlet {
 					}
 					fi.write(file);
 					out.println("Uploaded Filename: " + fileName + "<br>");
+					System.out.println(fieldName+","+fileName+","+filePath);
 				}
 			}
 			out.println("</body>");
 			out.println("</html>");
+			
+			String path = filePath+fileName;
+			FileEntity file = new FileEntity();
+			file.setNome(fileName);
+			file.setCaminho(path);
+			
+			FileDAO dao = new FileDAO();
+			dao.adicionar(file);
+			
 			//getServletContext().getRequestDispatcher("/upload.jsp").forward(request, response);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
